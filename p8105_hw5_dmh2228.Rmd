@@ -5,3 +5,21 @@ date: "2023-11-15"
 output: github_document
 ---
 
+Load libraries.
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(httr)
+```
+
+# Problem 1
+
+Import the data.
+
+```{r}
+homicide_data =
+  read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
+```
+
+
