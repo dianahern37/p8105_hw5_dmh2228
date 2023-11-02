@@ -91,8 +91,15 @@ Spaghetti plot.
 con_exp_plot =
 tidy_con_exp_data |> 
   ggplot(aes(x = week, y = observations, group = subject_id, color = subject_id)) +
-  geom_line()
+  geom_line() +
+  labs(
+    title = "Observations over time by subject",
+    x = "Week",
+    y = "Observations",
+    color = "Subject ID"
+    )
 
 con_exp_plot
 ```
 
+Since subjects in the experimental group are 11-20, you can see that their observations over time are higher than those subjects in the control group (1-10).
