@@ -109,7 +109,7 @@ Since subjects in the experimental group are 11-20, you can see that their obser
 
 # Problem 3
 
-Set Mu = 0.
+Create function. Set Mu = 0. 
 
 ```{r}
 one_samp_ttest = function(n = 30, sigma = 5) {
@@ -119,9 +119,26 @@ one_samp_data =
       rnorm(n = 30, mean = 0, sd = 1),
     ) 
   
-t.test(one_samp_data, mu = 0, alternative = "two.sided")
+broom::tidy(t.test(one_samp_data, mu = 0, alternative = "two.sided"))
   
 }
+```
+
+Generate 5000 datasets from the model.
+
+```{r}
+ttest_results_df = 
+  expand_grid(
+    sample_size = 30,
+    iter = 1:5000
+  ) |> 
+  mutate(
+    estimate_df = map_dfr(sample_size, one_samp_ttest)
+  ) |> 
+  unnest(estimate_df)
+
+ttest_results_df |>
+  select(estimate, p.value)
 ```
 
 
