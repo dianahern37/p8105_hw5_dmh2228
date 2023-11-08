@@ -236,9 +236,27 @@ results_df =
   ) |>
   unnest(estimate_df) |>
   unnest(estimate_df)
-
-ttest_results_df |>
-  select(estimate, p.value)
 ```
 
 Create plots.
+
+Power and effect size plot.
+
+```{r}
+plot_df = 
+  results_df |>
+  select(population_mean, estimate, p.value) |>
+  group_by(population_mean) |>
+  summarize(n_obs = n()) |>
+  mutate(props = round(n_obs / sum(n_obs), 2)) |>
+  ggplot(aes(x = population_mean, y = props)) +
+  geom_point() +
+  labs(
+    title = "Effect size and power",
+    x = "True value of μ",
+    y = "Power of test"
+  )
+
+plot_df
+```
+
