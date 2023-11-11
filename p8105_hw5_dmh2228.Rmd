@@ -260,6 +260,9 @@ power_plot_df =
 power_plot_df
 ```
 
+There is no association between effect size and power. The power of the test stays the same across true values of mu. 
+
+
 Average estimate of μ and true value of μ
 
 ```{r}
