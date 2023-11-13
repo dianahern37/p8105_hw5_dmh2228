@@ -243,12 +243,17 @@ Create plots.
 Power and effect size plot.
 
 ```{r}
-power_plot_df = 
+power_plot = 
   results_df |>
   select(population_mean, estimate, p.value) |>
-  group_by(population_mean) |>
-  summarize(n_obs = n()) |>
-  mutate(props = round(n_obs / sum(n_obs), 2)) |>
+  mutate(
+    reject_null = if_else(p.value < 0.05, 1, 0)
+  ) |>
+  group_by(population_mean, reject_null) |>
+  summarize(
+    n_obs = n()) |>
+  mutate(props = sum(reject_null) / n_obs) |>
+  filter(reject_null == 1) |>
   ggplot(aes(x = population_mean, y = props)) +
   geom_point() +
   labs(
@@ -257,16 +262,16 @@ power_plot_df =
     y = "Power of test"
   )
 
-power_plot_df
+power_plot
 ```
 
-There is no association between effect size and power. The power of the test stays the same across true values of mu. 
+There is no clear association between effect size and power. 
 
 
 Average estimate of μ and true value of μ
 
 ```{r}
-estimate_plot_df =
+estimate_plot =
   results_df |>
   group_by(population_mean) |>
   summarize(
@@ -280,13 +285,13 @@ estimate_plot_df =
     y = "Average estimate of μ"
   )
 
-estimate_plot_df
+estimate_plot
 ```
 
 Only in samples for which the null was rejected.
 
 ```{r}
-rejected_null_plot_df =
+rejected_null_plot =
   results_df |>
   filter(p.value < 0.05) |>
   group_by(population_mean) |>
@@ -301,7 +306,7 @@ rejected_null_plot_df =
     y = "Average estimate of μ"
   )
 
-rejected_null_plot_df
+rejected_null_plot
 ```
 
-The sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ.
+The sample average of μ̂ across tests for which the null is rejected approximately equal to the true value of μ likely due to the high power of the test.
