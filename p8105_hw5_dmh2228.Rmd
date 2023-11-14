@@ -102,8 +102,7 @@ prop_test_df =
   bind_rows(prop_test_output)
 
 prop_test_df |>
-  mutate(CI = paste0(conf.low, ",", conf.high)) |>
-  select(estimate, CI)
+  select(estimate, conf.low, conf.high)
 ```
 
 
@@ -147,7 +146,6 @@ tidy_con_exp_data =
 Spaghetti plot.
 
 ```{r}
-con_exp_plot =
 tidy_con_exp_data |> 
   ggplot(aes(x = week, y = observations, group = subject_id, color = subject_id)) +
   geom_line() +
@@ -158,10 +156,18 @@ tidy_con_exp_data |>
     color = "Subject ID"
     )
 
-con_exp_plot
+tidy_con_exp_data |> 
+  ggplot(aes(x = week, y = observations, group = subject_id, color = control_arm)) +
+  geom_line() +
+  labs(
+    title = "Observations over time by subject and control arm",
+    x = "Week",
+    y = "Observations",
+    color = "Control Arm"
+    )
 ```
 
-Since subjects in the experimental group are 11-20, you can see that their observations over time are higher than those subjects in the control group (1-10).
+I created two graphs: one to compare each individual subject and another to compare control and experimental groups. Since subjects in the experimental group are 11-20, you can see that their observations over time are higher than those subjects in the control group (1-10). 
 
 # Problem 3
 
