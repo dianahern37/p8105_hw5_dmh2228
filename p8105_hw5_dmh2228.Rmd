@@ -47,9 +47,9 @@ Create `city_state` variable and create summary for the total number of homicide
 homicide_tidy =
   homicide_data |>
    mutate(
-      city_state = paste0(city, ",", state)
+      city_state = str_c(city, state, sep = ", ")
     ) |>
-  filter(!city_state == "Tulsa,AL")
+  filter(!city_state == "Tulsa, AL")
 
 homicide_df =
   homicide_tidy |>
@@ -67,36 +67,31 @@ Use the `prop.test` function for `city_state` == "Baltimore,MD".
 
 ```{r}
 homicide_prop_test = function(x) {
-  
-  total_unsolved_df =
-    unsolved_homicide_df |>
-    filter(city_state == x) |> 
-    select(n_obs)
-  
-  total_homicide_df =
-    homicide_df |>
-    filter(city_state == x) |> 
-    select(n_obs)
 
-  n_unsolved = total_unsolved_df$n_obs
+n_homicide =  
+  homicide_df |>
+  filter(city_state == x) |>
+  pull(n_obs)
   
-  n_homicide = total_homicide_df$n_obs
+n_unsolved =
+  unsolved_homicide_df |>
+  filter(city_state == x) |>
+  pull(n_obs)
   
   
-result_tidy = broom::tidy(prop.test(x = n_unsolved, n = n_homicide, correct = FALSE))
+result_tidy = broom::tidy(prop.test(x = n_unsolved, n = n_homicide))
 
 }
 
-homicide_prop_test("Baltimore,MD")
+homicide_prop_test("Baltimore, MD")
 ```
 
-Use `prop.test` for all cities.
+Use `prop.test` for all cities. I could not figure out how to keep `city_state` variable, but I see what I could have done different by looking at Jeff's solution for Problem 1.
 
 ```{r}
 cities = unique(homicide_df$city_state)
 
-prop_test_output =
-  map(cities, homicide_prop_test)
+prop_test_output = map(cities, homicide_prop_test)
 
 prop_test_df =
   bind_rows(prop_test_output)
@@ -105,6 +100,23 @@ prop_test_df |>
   select(estimate, conf.low, conf.high)
 ```
 
+A plot that shows the estimates and CIs for each city. Cities are depicted as number since I could not figure out how to keep the `city_state` variable.
+
+```{r}
+prop_test_df |>
+  mutate(city_number = row_number(),
+         city_number = as.factor(city_number),
+         city_number = fct_reorder(city_number, estimate)) |>
+  ggplot(aes(x = city_number, y = estimate)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(
+    title = "Estimates and CIs for each city",
+    x = "City ID",
+    y = "Estimate"
+  )
+```
 
 # Problem 2
 
