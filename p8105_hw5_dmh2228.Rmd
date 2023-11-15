@@ -306,6 +306,9 @@ estimate_plot =
 estimate_plot
 ```
 
+The sample average of μ̂ across tests is equal to the true value of μ.
+
+
 Only in samples for which the null was rejected.
 
 ```{r}
